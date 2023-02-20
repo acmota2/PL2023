@@ -12,8 +12,6 @@ class person:
 class db:
     def __init__(self, content: list[str]):
         self.db_content = []
-        self.db_table: dict = {}
-
         for line in content:
             self.db_content.append(person(line))
 
