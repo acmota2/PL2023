@@ -10,24 +10,27 @@ def __media(l: list[int]) -> float:
     return sum_ / len_
 
 __table = {
-    'media': lambda l: __media([int(x) for x in l]),
-    'sum': lambda l: sum([int(x) for x in l]),
-    'maximum': lambda l: reduce(lambda x, y: x if x > y else y, [int(x) for x in l]),
-    'minimum': lambda l: reduce(lambda x, y: x if x < y else y, [int(x) for x in l]),
+    'media': lambda l: __media(l),
+    'sum': lambda l: sum(l),
+    'maximum': lambda l: reduce(lambda x, y: x if x > y else y, l),
+    'minimum': lambda l: reduce(lambda x, y: x if x < y else y, l),
     '': lambda x: x
 }
 
-def field_validation(field: str, raw: str, final_dict: dict) -> tuple[list, float]:
-    print(field, final_dict)
-    m = final_dict[field]
-    if m != {} and 'range' in m and len(l := [x for x in raw.split(',') if x not in ['\n', '']]) in m['range']:
-        m = l
-        if 'functions' in m:
-            print(l)
-            final_dict[f"{field}_{m['functions']}"] = __table[m['functions']](l)
-    m = raw
-    print(final_dict)
-    return final_dict
+def field_validation(dispatcher: dict, line_groups: dict) -> tuple[list, float]:
+    result = {}
+    for field, raw in line_groups.items(): 
+        l = [x for x in raw.split(',') if x != '']
+        result[field] = raw
+        if dispatcher[field] != {} and 'range' in dispatcher[field] and len(l) in dispatcher[field]['range']:
+            result[field] = l = [int(x) for x in l]
+            if 'functions' in dispatcher[field]:
+                name = dispatcher[field]['functions']
+                result[f"{field}_{name}"] = __table[name](l)
+        elif 'range' in dispatcher[field] and len(l) not in dispatcher[field]['range']:
+            return None
+
+    return result
 
 def make_match(header: str) -> tuple[str, dict]:
     regex = r'^'
@@ -45,7 +48,7 @@ def make_match(header: str) -> tuple[str, dict]:
                 regex += fr"(?P<{field_dispatcher['field']}>([^,]*,?){{{field_dispatcher['range']}}})"
 
             else:
-                regex += fr'(?P<{field}>[^,]*,?)'
+                regex += fr'((?P<{field}>[^,]*),?)'
 
             if field_dispatcher['function'] != None:
                 result_dispatcher[field_name]['functions'] = (field_dispatcher['function'])
