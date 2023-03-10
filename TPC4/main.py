@@ -1,5 +1,6 @@
 from sys import argv
 import csv_utils as csv
+from json import dumps
 import re
 
 if __name__ == '__main__':
@@ -10,13 +11,16 @@ if __name__ == '__main__':
 
     print(dispatcher)
     
-    json = open(f"./{argv[1].split('.')[0]}.json", "w")
-    final = f'[\n'
+    json_file = open(f"./{argv[1].split('.')[0]}.json", "w")
+    dicts = []
     for line in t:
         current = '\t{\n'
         if m := matcher.fullmatch(line):
             line_strs = m.groupdict()
             print(line_strs)
-            for k, v in dispatcher.items():
-                if (valid := csv.field_validation(k, v, dispatcher, line_strs)) != None:
-                    print(valid)
+            for k, v in line_strs.items():
+                dispatcher = csv.field_validation(k, v, dispatcher)
+            if dispatcher != None:
+                dicts.append(dispatcher)
+    final = dumps(obj=dicts, indent=2)
+    print(final, file=json_file)

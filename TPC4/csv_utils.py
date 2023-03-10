@@ -17,14 +17,16 @@ __table = {
     '': lambda x: x
 }
 
-def field_validation(field: str, raw: str, dispatcher: dict[dict], final_dict: dict) -> tuple[list, float]:
-    m = dispatcher[field]
+def field_validation(field: str, raw: str, final_dict: dict) -> tuple[list, float]:
+    print(field, final_dict)
+    m = final_dict[field]
     if m != {} and 'range' in m and len(l := [x for x in raw.split(',') if x not in ['\n', '']]) in m['range']:
+        m = l
         if 'functions' in m:
             print(l)
             final_dict[f"{field}_{m['functions']}"] = __table[m['functions']](l)
-    else:
-        return None
+    m = raw
+    print(final_dict)
     return final_dict
 
 def make_match(header: str) -> tuple[str, dict]:
