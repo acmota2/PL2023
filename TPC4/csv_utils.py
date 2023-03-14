@@ -36,9 +36,9 @@ def make_match(header: str) -> tuple[str, dict]:
     regex = r'^'
     result_dispatcher = {}
     field_matcher = re.compile(r"((?P<field>[a-zA-ZÀ-ÖØ-öø-ÿ_]+)(\{(?P<range>\d+(,\d+)?)\})?(::(?P<function>media|sum|maximum|minimum))?)")
-    for field, *_ in re.findall(field_matcher, header):
+    for field, *_ in field_matcher.findall(header):
         if field != '':
-            field_dispatcher = re.match(field_matcher, field).groupdict()
+            field_dispatcher = field_matcher.match(field).groupdict()
             field_name = field_dispatcher['field']
             result_dispatcher[field_name] = {}
 
