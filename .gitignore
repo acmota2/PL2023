@@ -1,6 +1,7 @@
 # mine
 .csv
 .txt
+bla.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
