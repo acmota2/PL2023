@@ -1,30 +1,43 @@
 import ply.lex as lex
 import sys
 
-tokens = (
-    # comment
-    'COMMENT',
+reserved = {
+    'comment': 'COMMENT',
+    'mult_line_comment':'MULT_LINE_COMMENT',
+    'char': 'CHAR',
+    'int': 'INT',
+    'short': 'SHORT',
+    'long': 'LONG',
+    'string': 'STRING',
+    'while': 'WHILE',
+    'for': 'FOR',
+    'function': 'FUNCTION',
+    'program': 'PROGRAM',
+    'range': 'RANGE'
+}
+
+tokens = [
     # abre e fecha
-    'COMMENT_L','COMMENT_R','L_BRACKET','R_BRACKET','L_BRACE','R_BRACE','L_PAR','R_PAR',
-    # tipos
-    'CHAR','SHORT','INT','LONG','STRING',
-    # loops
-    'WHILE','FOR',
-    # declaracoes
-    'VAR','ASSIGN','NUM','SEMICOLON','COMMA',
+    'L_BRACKET','R_BRACKET','L_BRACE','R_BRACE','L_PAR','R_PAR',
     # aritmetica
-    'SUM','MUL','DIV','SUB','RANGE',
+    'SUM','MUL','DIV','SUB',
     # cond
     'EQUAL','DIF','NOT','LESS','MORE','LESS_E','MORE_E', 'IN',
-    # func
-    'FUNCTION','PROGRAM'
-)
+    # declaracoes
+    'VAR','ASSIGN','NUM','SEMICOLON','COMMA'
+ ] + list(reserved.values())
+
+def t_MULT_LINE_COMMENT(t):
+    r'(/\*(.|\n)*?\*/)|(//.*)'
+    pass
+
+
+def t_COMMENT(t):
+    r'\/\/.*'
+    pass
 
 t_ignore = f' \n\t\r'
-# comments
-t_COMMENT_L = r'(\/\*)(.*)(?=(\*\/))'
-t_COMMENT_R = r'\*/'
-t_COMMENT = r'\/\/.*'
+
 # abre e fecha
 t_L_BRACKET = r'\['
 t_R_BRACKET = r'\]'
@@ -39,14 +52,20 @@ t_INT = r'int'
 t_LONG = r'long'
 t_STRING = r'string'
 # loops
-t_WHILE = r'while'
-t_FOR = r'for'
+def t_WHILE(t):
+    r'while'
+    return t
+
+def t_FOR(t):
+    r'for'
+    return t
+
 # artimetica
 t_SUM = r'\+'
 t_MUL = r'\*'
 t_DIV = r'/'
 t_SUB = r'-'
-t_RANGE = r'..'
+t_RANGE = r'..(?=\d+)'
 # cond
 t_EQUAL = r'=='
 t_DIF = r'!='
@@ -57,10 +76,18 @@ t_LESS_E = r'<='
 t_MORE_E = r'>='
 t_IN = r'in'
 # func
-t_FUNCTION = r'function'
-t_PROGRAM = r'program'
+def t_FUNCTION(t): 
+    r'function'
+    return t
+def t_PROGRAM(t):
+     r'program'
+     return t
 # declaracoes
-t_VAR = r'[_a-z]\w*'
+def t_VAR(t):
+    r'[_a-z]\w*'
+    t.type = reserved.get(t.value,'VAR')
+    return t
+
 t_ASSIGN = r'='
 
 def t_NUM(t):
