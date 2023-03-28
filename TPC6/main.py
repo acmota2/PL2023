@@ -76,13 +76,12 @@ def t_error(t):
     t.lexer.skip(1)
 
 if __name__ == '__main__':
-    data = sys.stdin.read() if len(sys.argv) == 1 else open(sys.argv).read()
+    data = sys.stdin.read() if len(sys.argv) == 1 else open(sys.argv[1]).read()
     lexer = lex.lex()
     lexer.input(data)
     toks = []
     for tok in lexer:
         toks.append(tok)
-    print(f'''
-Tamanho da lista: {len(toks)}
+    print(f'''Tamanho da lista: {len(toks)}
 Lista:
 {toks}''')
