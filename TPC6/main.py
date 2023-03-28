@@ -2,8 +2,9 @@ import ply.lex as lex
 import sys
 
 reserved = {
-    'comment': 'COMMENT',
-    'mult_line_comment':'MULT_LINE_COMMENT',
+    'if': 'IF',
+    'else': 'ELSE',
+    'in':'IN',
     'char': 'CHAR',
     'int': 'INT',
     'short': 'SHORT',
@@ -12,29 +13,25 @@ reserved = {
     'while': 'WHILE',
     'for': 'FOR',
     'function': 'FUNCTION',
-    'program': 'PROGRAM',
-    'range': 'RANGE'
+    'program': 'PROGRAM'
 }
 
 tokens = [
+    # comment
+    'COMMENT',
     # abre e fecha
     'L_BRACKET','R_BRACKET','L_BRACE','R_BRACE','L_PAR','R_PAR',
     # aritmetica
-    'SUM','MUL','DIV','SUB',
+    'SUM','MUL','DIV','SUB','ASSIGN','RANGE',
     # cond
-    'EQUAL','DIF','NOT','LESS','MORE','LESS_E','MORE_E', 'IN',
+    'EQUAL','DIF','NOT','LESS','MORE','LESS_E','MORE_E',
     # declaracoes
-    'VAR','ASSIGN','NUM','SEMICOLON','COMMA'
+    'VAR','NUM','SEMICOLON','COMMA'
  ] + list(reserved.values())
 
-def t_MULT_LINE_COMMENT(t):
-    r'(/\*(.|\n)*?\*/)|(//.*)'
-    pass
-
-
 def t_COMMENT(t):
-    r'\/\/.*'
-    pass
+    r'(/\*(.|\n)*?\*/)|(//.*)'
+    return t
 
 t_ignore = f' \n\t\r'
 
@@ -60,11 +57,24 @@ def t_FOR(t):
     r'for'
     return t
 
+def t_IF(t):
+    r'if'
+    return t
+
+def t_ELSE(t):
+    r'else'
+    return t
+
 # artimetica
 t_SUM = r'\+'
 t_MUL = r'\*'
 t_DIV = r'/'
 t_SUB = r'-'
+
+def t_ASSIGN(t):
+    r'='
+    return t
+
 t_RANGE = r'..(?=\d+)'
 # cond
 t_EQUAL = r'=='
@@ -88,7 +98,6 @@ def t_VAR(t):
     t.type = reserved.get(t.value,'VAR')
     return t
 
-t_ASSIGN = r'='
 
 def t_NUM(t):
     r'[+\-]?\d+'
